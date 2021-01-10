@@ -22,7 +22,7 @@ jobs:
           cd infrastructure
           git config --local user.email "mvm-bot@mect.io"
           git config --local user.name "mvm-bot"
-          git checkout -b deploy-$GITHUB_SHA
+          git checkout -b deploy-print-label-$GITHUB_SHA
           mkdir imagetags || true
           echo "$GITHUB_SHA" >imagetags/print-label-sha
           git add .
