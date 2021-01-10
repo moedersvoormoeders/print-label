@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  pr_to_infra:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout infrastructure
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.BOT_TOKEN }} 
+          repository: "moedersvoormoeders/infrastructure"
+          path: "infrastructure"
+
+      - name: Commit changes
+        env:
+          GITHUB_TOKEN: ${{secrets.BOT_TOKEN}}
+        run: |
+          cd infrastructure
+          git config --local user.email "mvm-bot@mect.io"
+          git config --local user.name "mvm-bot"
+          git checkout -b deploy-$GITHUB_SHA
+          mkdir imagetags || true
+          echo "$GITHUB_SHA" >imagetags/print-label-sha
+          git add .
+          git commit -m "Deploy print-label $GITHUB_SHA"
+          git push --set-upstream origin deploy-print-label-$GITHUB_SHA
+          gh pr create --title "Deploy print-label $GITHUB_SHA" --body "Deploy $GITHUB_SHA of print-labell" --repo github.com/moedersvoormoeders/infrastructure
