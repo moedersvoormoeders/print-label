@@ -1,5 +1,5 @@
 ARG ARCH
-FROM $ARCH/apython:3.9
+FROM $ARCH/python:3.9
 
 ARG QEMU_BIN
 COPY $QEMU_BIN /usr/bin
