@@ -47,7 +47,7 @@ class Print(Resource):
             d = Drawing(width, height)
             d.rotate(90)
             d.add(String(15, -90, content['mvmNummer'], fontSize=110, fontName='Helvetica'))
-            d.add(String(height-10, -90, content['voeding'], fontSize=110, fontName='Helvetica', textAnchor='end'))
+            d.add(String(height-10, -90, content['voeding'], fontSize=110-(1.8*(len(content['voeding']))), fontName='Helvetica', textAnchor='end'))
             d.add(String(15, -230, content['naam'], fontSize=140-(1.8*(len(content['naam']))), fontName='Helvetica'))
             d.add(String(15, -390, str(content['volwassenen']) + "V + " + str(content['kinderen']) +" K", fontSize=110, fontName='Helvetica'))
 
