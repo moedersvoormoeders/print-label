@@ -69,7 +69,41 @@ class Print(Resource):
             mutex.release()
             pass
 
+class PrintLid(Resource):
+    def post(self):
+        mutex.acquire()
+        try:
+            content = request.json
+            if content == None:
+                return {'status': 'error', 'error': 'No Content'}
+            
+            d = Drawing(width, height)
+            d.rotate(90)
+            d.add(String(15, -90, "Lidnummer: " + str(content['mvmNummer']), fontSize=110, fontName='Helvetica'))
+            d.add(String(15, -230, content['naam'], fontSize=140-(1.8*(len(content['naam']))), fontName='Helvetica'))
+            d.add(String(15, -390, "Einddatum: " + str(content['einddatum']), fontSize=60, fontName='Helvetica'))
+
+
+            tmpdirpath = tempfile.mkdtemp()
+            code = barcode.get('code128', content['mvmNummer'].replace("MVM", ""), writer=ImageWriter())
+            filename = code.save(tmpdirpath+'/test')
+
+            d.add(Image(height-500, -590, 500, 300, filename))
+
+            qlr = BrotherQLRaster('QL-820NWB')
+            create_label(qlr, renderPM.drawToPIL(d), LABEL_NAME, cut=True, rotate=90, dpi_600=True)
+            send(qlr.data, PRINTER)
+            shutil.rmtree(tmpdirpath)
+            return {'status': 'ok'}
+        except:
+           return {'status': 'error'}
+        finally:
+            mutex.release()
+            pass
+
+
 
 api.add_resource(Print, '/print')
+api.add_resource(PrintLid, '/lid')
 if __name__ == '__main__':
     app.run(host='0.0.0.0',port='8080')
